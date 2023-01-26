@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+//create migrations yarn prisma migrate dev
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  name       String
+  email      String
+  password   String
+  created_at DateTime? @default(now())
+  update_at  DateTime? @default(now())
+
+  @@map("t_users")
+}
+
+model Category {
+  id         String    @id @default(uuid())
+  name       String
+  created_at DateTime? @default(now())
+  update_at  DateTime? @default(now())
+  products   Product[]
+
+  @@map("t_categories")
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  price       String
+  description String
+  banner      String
+  created_at  DateTime?   @default(now())
+  update_at   DateTime?   @default(now())
+  Category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  orderItems  OrderItem[]
+
+  @@map("t_products")
+}
+
+model Order {
+  id         String      @id @default(uuid())
+  table      Int
+  status     Boolean     @default(false)
+  draft      Boolean     @default(true)
+  name       String?
+  created_at DateTime?   @default(now())
+  update_at  DateTime?   @default(now())
+  items      OrderItem[]
+
+  @@map("t_orders")
+}
+
+model OrderItem {
+  id         String    @id @default(uuid())
+  quantity   Int
+  created_at DateTime? @default(now())
+  update_at  DateTime? @default(now())
+  Order      Order     @relation(fields: [orderId], references: [id])
+  orderId    String
+  Product    Product   @relation(fields: [productId], references: [id])
+  productId  String
+
+  @@map("t_order_items")
+}

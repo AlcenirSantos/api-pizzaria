@@ -1,9 +1,11 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
+import { UserController } from "./controllers/user/UserController";
+import { IsAuthenticated } from "./middlewares/isAuthenticated";
 
 const router = Router();
 
-router.get("/api/test", (req: Request, res: Response) => {
-    return res.json({initial: "Hello World!"});
-})
+router.post('/api/users', new UserController().create);
+router.post('/api/users/auth', new UserController().auth);
+router.get('/api/users/me', IsAuthenticated, new UserController().detailsUser);
 
 export {router};
